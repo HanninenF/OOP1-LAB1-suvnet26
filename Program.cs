@@ -45,6 +45,7 @@ static public class Program
             else if (userSelect == 2)
             {
 
+                Parcel parcel = new();
                 Console.WriteLine("hade jag haft mer tid hade jag gjort denna del. Men tanke är att jag skulle kunna återanvända mina metoder i bästa fall och bara lägga in logik för att hämta data från fil istället för en user //Fredrik programmerare");
 
                 /* Gör klart menyval 2. Användaren ska få ange ett filnamn och programmet ska beräkna frakten för varje paket i filen.
@@ -64,15 +65,19 @@ namn;vikt;värde;medlem;försäkring;land */
 
 
                     int baseFee = GetBaseFee();
-                    Console.WriteLine($"BaseFee är: {baseFee}");
-
+                    string sender = row[0];
                     double parcelWeight = double.Parse(row[1]);
-
+                    decimal parcelValue = decimal.Parse(row[2]);
                     bool isMember = row[3].Trim() == "ja";
-
-
+                    bool hasInsurance = row[4].Trim() == "ja";
                     double parcelExcessWeight = GetParcelExcessWeight(parcelWeight, isMember);
-                    Console.WriteLine($"parcelExcessWeight är: {parcelExcessWeight}");
+                    decimal parcelWeightCost = GetParcelExcessWeightCost(parcelExcessWeight);
+                    decimal insuranceCost = GetInsuranceCost(hasInsurance, parcelValue);
+                    decimal heavyWeightCost = GetHeavyWeightCost(parcelExcessWeight);
+                    decimal totalCost = GetTotalCost(baseFee, parcelWeightCost, heavyWeightCost, insuranceCost);
+
+
+                    PrintReceipt(sender, parcelWeight, parcelValue, isMember, hasInsurance, baseFee, parcelWeightCost, insuranceCost, heavyWeightCost, totalCost);
                 }
 
 
