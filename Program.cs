@@ -46,6 +46,36 @@ static public class Program
             {
 
                 Console.WriteLine("hade jag haft mer tid hade jag gjort denna del. Men tanke är att jag skulle kunna återanvända mina metoder i bästa fall och bara lägga in logik för att hämta data från fil istället för en user //Fredrik programmerare");
+
+                /* Gör klart menyval 2. Användaren ska få ange ett filnamn och programmet ska beräkna frakten för varje paket i filen.
+
+Varje rad innehåller:
+namn;vikt;värde;medlem;försäkring;land */
+
+                //läsa varje rad
+                string[] rowsAllInfo = File.ReadAllLines("fraktsedel.txt");
+                // skicka in i metoderna
+
+                for (int i = 0; i < rowsAllInfo.Length; i++)
+                {
+                    string[] row = rowsAllInfo[i].Split(";");
+                    Console.WriteLine($"row is: {row}");
+
+
+
+                    int baseFee = GetBaseFee();
+                    Console.WriteLine($"BaseFee är: {baseFee}");
+
+                    double parcelWeight = double.Parse(row[1]);
+
+                    bool isMember = row[3].Trim() == "ja";
+
+
+                    double parcelExcessWeight = GetParcelExcessWeight(parcelWeight, isMember);
+                    Console.WriteLine($"parcelExcessWeight är: {parcelExcessWeight}");
+                }
+
+
             }
             else if (userSelect == 3)
             {
