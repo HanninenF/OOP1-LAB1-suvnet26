@@ -40,7 +40,7 @@ static public class Program
 
 
 
-                PrintReceipt(parcel.UserName, parcel.Weight, parcel.Value, parcel.IsMember, parcel.HasInsurance, baseFee, parcelExcessWeightCost, insuranceCost, heavyWeightCost, totalCost);
+                PrintReceipt(false, parcel.UserName, parcel.Weight, parcel.Value, parcel.IsMember, parcel.HasInsurance, baseFee, parcelExcessWeightCost, insuranceCost, heavyWeightCost, totalCost);
             }
             else if (userSelect == 2)
             {
@@ -65,19 +65,19 @@ namn;vikt;värde;medlem;försäkring;land */
 
 
                     int baseFee = GetBaseFee();
-                    string sender = row[0];
-                    double parcelWeight = double.Parse(row[1]);
-                    decimal parcelValue = decimal.Parse(row[2]);
-                    bool isMember = row[3].Trim() == "ja";
-                    bool hasInsurance = row[4].Trim() == "ja";
-                    double parcelExcessWeight = GetParcelExcessWeight(parcelWeight, isMember);
+                    parcel.UserName = row[0];
+                    parcel.Weight = double.Parse(row[1]);
+                    parcel.Value = decimal.Parse(row[2]);
+                    parcel.IsMember = row[3].Trim() == "ja";
+                    parcel.HasInsurance = row[4].Trim() == "ja";
+                    double parcelExcessWeight = GetParcelExcessWeight(parcel.Weight, parcel.IsMember);
                     decimal parcelWeightCost = GetParcelExcessWeightCost(parcelExcessWeight);
-                    decimal insuranceCost = GetInsuranceCost(hasInsurance, parcelValue);
+                    decimal insuranceCost = GetInsuranceCost(parcel.HasInsurance, parcel.Value);
                     decimal heavyWeightCost = GetHeavyWeightCost(parcelExcessWeight);
                     decimal totalCost = GetTotalCost(baseFee, parcelWeightCost, heavyWeightCost, insuranceCost);
+                    bool isFirstLoop = i == 0;
 
-
-                    PrintReceipt(sender, parcelWeight, parcelValue, isMember, hasInsurance, baseFee, parcelWeightCost, insuranceCost, heavyWeightCost, totalCost);
+                    PrintReceipt(true, parcel.UserName, parcel.Weight, parcel.Value, parcel.IsMember, parcel.HasInsurance, baseFee, parcelWeightCost, insuranceCost, heavyWeightCost, totalCost, isFirstLoop);
                 }
 
 
@@ -90,9 +90,24 @@ namn;vikt;värde;medlem;försäkring;land */
         }
     }
 
-    static private void PrintReceipt(string sender, double weight, decimal value, bool isMember, bool hasInsurance, int baseFee, decimal weightFee, decimal insuranceFee, decimal heavyGoodsFee, decimal totalCost)
+    static private void PrintReceipt(bool printToFile, string sender, double weight, decimal value, bool isMember, bool hasInsurance, int baseFee, decimal weightFee, decimal insuranceFee, decimal heavyGoodsFee, decimal totalCost, bool isFirstLoop = false)
     {
-        Console.WriteLine($"FRAKTKVITTO\n-----------------------------\nAvsändare: {sender}\nVikt: {weight} kg\nInnehållets värde: {value} kr\nMedlem: {isMember}\nFörsäkring: {hasInsurance}\nGrundavgift: {baseFee} kr\nViktavgift: {weightFee} kr\nTunggodstillägg: {heavyGoodsFee} kr\nFörsäkringsavgift: {insuranceFee:0.##} kr\nTotalt att betala: {totalCost} kr\n-----------------------------");
+        string receiptFileName = "kvitto.txt";
+
+        string dataToPrint = $"FRAKTKVITTO\n-----------------------------\nAvsändare: {sender}\nVikt: {weight} kg\nInnehållets värde: {value} kr\nMedlem: {isMember}\nFörsäkring: {hasInsurance}\nGrundavgift: {baseFee} kr\nViktavgift: {weightFee} kr\nTunggodstillägg: {heavyGoodsFee} kr\nFörsäkringsavgift: {insuranceFee:0.##} kr\nTotalt att betala: {totalCost} kr\n-----------------------------\n\n";
+
+        if (printToFile)
+        {
+
+            if (isFirstLoop && File.Exists(receiptFileName))
+            {
+                File.Delete(receiptFileName);
+            }
+
+            File.AppendAllText(receiptFileName, dataToPrint);
+
+        }
+        else Console.WriteLine(dataToPrint);
     }
     static private Parcel GetParcelInfo()
     {
